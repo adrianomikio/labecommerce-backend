@@ -2,9 +2,9 @@ import { stringify } from "querystring";
 import { TUser, TProduct, TPurchase, CATEGORIES } from "./types";
 
 export let users: TUser[] = [
-    { id: "Adriano", email: "adriano@dominio.com", password: "senhaAdriano" },
-    { id: "Joaquim", email: "joaquim@dominio.com", password: "senhaJoaquim" },
-    { id: "Paola", email: "paola@dominio.com", password: "senhaPaola" }]
+    { id: "01", email: "adriano@dominio.com", password: "senhaAdriano" },
+    { id: "02", email: "joaquim@dominio.com", password: "senhaJoaquim" },
+    { id: "03", email: "paola@dominio.com", password: "senhaPaola" }]
 
 export let products: TProduct[] = [
     { id: "01", name: "Pacote de maçã 500g", price: 10.00, category: CATEGORIES.FRUITS },
@@ -12,10 +12,26 @@ export let products: TProduct[] = [
     { id: "03", name: "Pacote de café em pó 500g", price: 17.00, category: CATEGORIES.COFTEACHOCO }
 ]
 
+
 export let purchases: TPurchase[] = [
-    { userId: users[0].id, productId: products[1].id, quantity: 2, totalPrice: products[1].price * 2 },
-    { userId: users[1].id, productId: products[2].id, quantity: 1, totalPrice: products[2].price * 1 },
-    { userId: users[2].id, productId: products[0].id, quantity: 2, totalPrice: products[0].price * 2 }
+    {
+        userId: users[0].id,
+        productId: products[1].id,
+        quantity: 2,
+        totalPrice: products[1].price * 2
+    },
+    {
+        userId: users[1].id,
+        productId: products[2].id,
+        quantity: 1,
+        totalPrice: products[2].price * 1
+    },
+    {
+        userId: users[2].id,
+        productId: products[0].id,
+        quantity: 2,
+        totalPrice: products[0].price * 2
+    }
 ]
 
 export function createUser(id: string, email: string, password: string) {
