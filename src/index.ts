@@ -236,6 +236,7 @@ app.get('/products/search', (req: Request, res: Response) => {
         if (q.length > 0) {
             const result = products.filter(
                 (product) =>  product.name.toLowerCase().includes(q.toLowerCase())
+            
             )
             if (result.length < 1) {
                 res.status(404)
