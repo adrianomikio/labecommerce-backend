@@ -114,7 +114,11 @@ INSERT INTO
 VALUES ("p001", 21, 1, NULL, "01"), ("p002", 18, 1, NULL, "03"), ("p003", 25, 1, NULL, "02"), ("p004", 18, 0, NULL, "01"), ("p005", 15, 0, NULL, "02"), ("p006", 10, 0, NULL, "03");
 
 UPDATE purchases
-SET delivered_at = DATETIME('now')
+SET
+    delivered_at = DATETIME('now')
 WHERE id = "p003";
 
-SELECT * FROM purchases INNER JOIN users ON buyer_id = users.id;
+SELECT *
+FROM purchases
+    INNER JOIN users ON buyer_id = users.id
+WHERE users.id = "03"
