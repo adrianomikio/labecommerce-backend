@@ -1,4 +1,3 @@
-import { stringify } from "querystring";
 import { TUser, TProduct, TPurchase, CATEGORIES } from "./types";
 
 export let users: TUser[] = [

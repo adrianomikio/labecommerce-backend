@@ -5,6 +5,8 @@ CREATE TABLE
         password TEXT NOT NULL
     );
 
+DROP TABLE users;
+
 INSERT INTO
     users (id, email, password)
 VALUES (
@@ -29,6 +31,8 @@ CREATE TABLE
         category TEXT NOT NULL
     );
 
+DROP TABLE products;
+
 INSERT INTO
     products (id, name, price, category)
 VALUES (
@@ -39,7 +43,7 @@ VALUES (
     ), (
         "02",
         "Café Solúvel 50g",
-        8.9,
+        9,
         "Chá, Café e Achocolatados"
     ), (
         "03",
@@ -58,9 +62,7 @@ VALUES (
         "Ervas e Especiarias"
     );
 
-SELECT * FROM users;
-
--- Refatoração do ex. 3 -> ORDER BY email ASC;
+SELECT * FROM users ORDER BY email ASC;
 
 SELECT * FROM products ORDER BY price ASC LIMIT 20;
 
@@ -88,3 +90,35 @@ SELECT *
 FROM products
 WHERE price > 3 AND price <= 5
 ORDER BY price ASC;
+
+CREATE TABLE
+    purchases(
+        id TEXT PRIMARY KEY UNIQUE NOT NULL,
+        total_price REAL NOT NULL,
+        paid INTEGER NOT NULL,
+        delivered_at TEXT,
+        buyer_id TEXT NOT NULL,
+        Foreign Key (buyer_id) REFERENCES users(id)
+    );
+
+DROP TABLE purchases;
+
+INSERT INTO
+    purchases(
+        id,
+        total_price,
+        paid,
+        delivered_at,
+        buyer_id
+    )
+VALUES ("p001", 21, 1, NULL, "01"), ("p002", 18, 1, NULL, "03"), ("p003", 25, 1, NULL, "02"), ("p004", 18, 0, NULL, "01"), ("p005", 15, 0, NULL, "02"), ("p006", 10, 0, NULL, "03");
+
+UPDATE purchases
+SET
+    delivered_at = DATETIME('now')
+WHERE id = "p003";
+
+SELECT *
+FROM purchases
+    INNER JOIN users ON buyer_id = users.id
+WHERE users.id = "03"
