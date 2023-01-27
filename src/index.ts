@@ -16,16 +16,30 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+//TEST QUERIES 
 // server running
 app.listen(3003, () => {
-    console.log("Servidor rodando na porta 3003.");
+    console.log(`Server running on port ${3003}.`);
 })
 
 // ping server
-app.get('/ping', (req: Request, res: Response) => {
-    res.send('pong!');
+app.get('/ping', async (req: Request, res: Response) => {
+    try {
+        res.status(200).send('Pong!');
+    }
+
+    catch (error) {
+        console.log(error)
+
+        if (res.statusCode === 200) { res.status(500) }
+
+        if (error instanceof Error) { res.send(error.message) }
+
+        else { res.send("Unexpected error.") }
+    }
 })
 
+//CREATE QUERIES
 //create new user
 app.post('/users', async (req: Request, res: Response) => {
     try {
@@ -44,33 +58,36 @@ app.post('/users', async (req: Request, res: Response) => {
 
             if (checkIdExist) {
                 res.status(400)
-                throw new Error("Já há um usuário com este 'id'. O 'id' de cada usuário deve ser único.")
+                throw new Error("There's already an user with this 'id'. Each user's 'id' must be unique.")
             }
 
             if (checkEmail) {
                 res.status(400);
-                throw new Error("Já existe um usuário com este 'email'. Cada usuário deve ter 'email' único.")
+                throw new Error("There's already an user with this 'email'. Each user's 'email' must be unique.")
             }
 
             else {
                 await db.insert({ id, name, email, password }).into("users")
-                res.status(200).send("Usuário cadastrado com sucesso.")
+                res.status(200).send("User registered successfully.")
             }
 
         }
         else {
             res.status(400);
-            throw new Error("Todos os campos do usuário precisam ser definidos.");
+            throw new Error("An id, a name, an email and a password must be inserted to register a new user.");
         }
     }
 
-    catch (error: any) {
+
+    catch (error) {
         console.log(error)
-        if (res.statusCode === 200) {
-            res.status(500);
-        }
-        res.send(error.message)
-    };
+
+        if (res.statusCode === 200) { res.status(500) }
+
+        if (error instanceof Error) { res.send(error.message) }
+
+        else { res.send("Unexpected error.") }
+    }
 })
 
 //create new product
@@ -89,30 +106,28 @@ app.post('/products', async (req: Request, res: Response) => {
 
             if (checkProductId) {
                 res.status(400)
-                throw new Error("Já existe um produto com o mesmo 'id'. Cada produto deve ter 'id' único.")
+                throw new Error("There's already a product with this 'id'. Each product's 'id' must be unique.")
             }
 
             else {
                 await db.insert(newProduct).into("products")
-                res.status(200).send("Produto cadastrado com sucesso.")
+                res.status(200).send("Product registered successfully.")
             }
         }
 
         else {
             res.status(400)
-            throw new Error("Todos os campos do produto devem ser preenchidos.")
+            throw new Error("An 'id', 'name', 'price', 'image_url', and a 'category' must be informed to register a new product.")
         }
     }
     catch (error) {
         console.log(error)
 
-        if (res.statusCode === 200) {
-            res.status(500)
-        }
+        if (res.statusCode === 200) { res.status(500) }
 
         if (error instanceof Error) { res.send(error.message) }
 
-        else { res.send("Erro inesperado.") }
+        else { res.send("Unexpected error.") }
     }
 })
 
@@ -125,25 +140,26 @@ app.post('/purchases', async (req: Request, res: Response) => {
             let newPurchase = { id, total_price, paid, buyer_id }
 
             await db.insert(newPurchase).into("purchases")
-            res.status(200).send("Compra registrada com sucesso.")
+            res.status(200).send("Purchase registered successfully.")
         }
         else {
             res.status(400)
-            throw new Error("O 'totalPrice' deve ser igual ao preço do produto vezes a quantidade.")
+            throw new Error("An 'id', 'total_price', 'paid' and 'buyer_id' must be informed to register a new purchase.")
         }
     }
-    catch (error: any) {
+    catch (error) {
         console.log(error)
 
-        if (res.statusCode === 200) {
-            res.status(500)
-        }
+        if (res.statusCode === 200) { res.status(500) }
 
-        res.send(error.message)
+        if (error instanceof Error) { res.send(error.message) }
+
+        else { res.send("Unexpected error.") }
     }
 })
 
-// get all users
+//GET QUERIES
+//get all users
 app.get('/users', async (req: Request, res: Response) => {
 
     try {
@@ -151,12 +167,14 @@ app.get('/users', async (req: Request, res: Response) => {
         res.status(200).send(users)
     }
 
-    catch (error: any) {
+    catch (error) {
         console.log(error)
-        if (res.statusCode === 200) {
-            res.status(500);
-        }
-        res.send(error.message)
+
+        if (res.statusCode === 200) { res.status(500) }
+
+        if (error instanceof Error) { res.send(error.message) }
+
+        else { res.send("Unexpected error.") }
     };
 })
 
@@ -167,12 +185,14 @@ app.get('/products', async (req: Request, res: Response) => {
         res.status(200).send(products)
     }
 
-    catch (error: any) {
+    catch (error) {
         console.log(error);
-        if (res.statusCode === 200) {
-            res.status(500);
-        }
-        res.send(error.message);
+
+        if (res.statusCode === 200) { res.status(500); }
+
+        if (error instanceof Error) { res.send(error.message) }
+
+        else { res.send("Unexpected error.") }
     };
 })
 
@@ -185,10 +205,12 @@ app.get('/purchases', async (req: Request, res: Response) => {
 
     catch (error: any) {
         console.log(error);
-        if (res.statusCode === 200) {
-            res.status(500);
-        }
-        res.send(error.message);
+
+        if (res.statusCode === 200) { res.status(500); }
+
+        if (error instanceof Error) { res.send(error.message) }
+
+        else { res.send("Unexpected error.") }
     };
 })
 
@@ -197,14 +219,15 @@ app.get('/products/search', async (req: Request, res: Response) => {
     try {
         const q = req.query.q
         console.log(q)
+
         let productOnDB = await db("products").where("name", "LIKE", `%${q}%`)
         console.log(productOnDB)
-        if (!productOnDB) {
-            res.status(404)
-            throw new Error("Não há produtos registrados com o nome informado.")
-        }
+
+        if (productOnDB) { res.status(200).send(productOnDB) }
+
         else {
-            res.status(200).send(productOnDB)
+            res.status(404)
+            throw new Error("There's no products with inserted term.")
         }
     }
 
@@ -215,7 +238,7 @@ app.get('/products/search', async (req: Request, res: Response) => {
 
         if (error instanceof Error) { res.send(error.message) }
 
-        else { res.send("Erro inesperado.") }
+        else { res.send("Unexpected error.") }
 
     }
 })
@@ -234,23 +257,25 @@ app.get("/products/:id", async (req: Request, res: Response) => {
                     res.status(200).send(result)
                 }
                 else {
-                    res.status(404).send("Produto não encontrado.")
+                    res.status(404).send("Product with inserted 'id' not found.")
                 }
             }
 
             else {
                 res.status(400)
-                throw new Error("Um 'id' deve ser inserido para pesquisa.")
+                throw new Error("An 'id' must be inserted to search for a product.")
             }
         }
     }
 
-    catch (error: any) {
-        console.log(error.message)
-        if (res.statusCode === 200) {
-            res.status(500);
-        }
-        res.send(error)
+    catch (error) {
+        console.log(error)
+
+        if (res.statusCode === 200) { res.status(500); }
+
+        if (error instanceof Error) { res.send(error.message) }
+
+        else { res.send("Unexpected error.") }
     }
 })
 
@@ -269,25 +294,28 @@ app.get("/users/:id/purchases", async (req: Request, res: Response) => {
 
             else {
                 res.status(404)
-                throw new Error("Não há usuário registrado com o 'id' inserido.")
+                throw new Error("There are no users with inserted 'id'.")
             }
         }
 
         if (id === ":id") {
             res.status(400)
-            throw new Error("Um 'id' deve ser inserido para a pesquisa.")
+            throw new Error("An 'id' must be inserted to search for user's purchases.")
         }
     }
 
-    catch (error: any) {
-        console.log(error.message)
-        if (res.statusCode === 200) {
-            res.status(500);
-        }
-        res.send(error)
+    catch (error) {
+        console.log(error)
+
+        if (res.statusCode === 200) { res.status(500) }
+
+        if (error instanceof Error) { res.send(error.message) }
+
+        else { res.send("Unexpected error.") }
     }
 })
 
+//UPDATE QUERIES
 //update user's data by id
 app.put('/users/:id', (req: Request, res: Response) => {
     try {
@@ -309,24 +337,26 @@ app.put('/users/:id', (req: Request, res: Response) => {
                 userToEdit.email = newEmail || userToEdit.email
                 userToEdit.password = newPassword || userToEdit.password
 
-                res.status(200).send("Usuário atualizado com sucesso")
+                res.status(200).send("User updated successfully.")
             }
             else {
-                throw new Error("Todos os campos do usuário devem ser preenchidos.")
+                throw new Error("A 'newId', or 'newEmail', or 'newPassword' must be informed to update an user's data.")
             }
         }
         else {
             res.status(404)
-            throw new Error("Não há usuários registrados com o 'id' informado.")
+            throw new Error("There are no users with inserted 'id'.")
         }
     }
 
-    catch (error: any) {
+    catch (error) {
         console.log(error)
-        if (res.statusCode === 200) {
-            res.status(500)
-        }
-        res.send(error.message)
+
+        if (res.statusCode === 200) { res.status(500) }
+
+        if (error instanceof Error) { res.send(error.message) }
+
+        else { res.send("Unexpected error.") }
     }
 })
 
@@ -347,7 +377,7 @@ app.put('/products/:id', async (req: Request, res: Response) => {
             ) {
                 const [productToEdit] = await db("products").where({ id: id })
                 console.log(productToEdit)
-                
+
                 if (productToEdit) {
                     await db.update(
                         {
@@ -357,18 +387,21 @@ app.put('/products/:id', async (req: Request, res: Response) => {
                         }
                     ).from("products").where({ id: id })
 
-                    res.status(200).send("Produto atualizado com sucesso")
+                    res.status(200).send("Product's data updated successfully.")
                 }
-                else { res.status(404).send("Produto não encontrado.") }
+                else { res.status(404).send("Product with inserted 'id' not found.") }
             }
         }
     }
-    catch (error: any) {
+
+    catch (error) {
         console.log(error)
-        if (res.statusCode === 200) {
-            res.status(500)
-        }
-        res.send(error.message)
+
+        if (res.statusCode === 200) { res.status(500) }
+
+        if (error instanceof Error) { res.send(error.message) }
+
+        else { res.send("Unexpected error.") }
     }
 })
 
@@ -378,10 +411,23 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
         let purchaseIdToSearch = req.params.id
 
         if (purchaseIdToSearch !== ":id") {
-            let [checkPurchase] = await db.select("*").from("purchases").where({ id: purchaseIdToSearch })
+            let [checkPurchase] = await db
+                .select("*")
+                .from("purchases")
+                .where({ id: purchaseIdToSearch })
 
             if (checkPurchase) {
-                let purchaseWithProducts = await db("purchases_products").innerJoin("purchases", "purchases_products.purchase_id", "=", "purchases.id").where({ purchase_id: purchaseIdToSearch }).innerJoin("products", "purchases_products.product_id", "=", "products.id").where({ purchase_id: purchaseIdToSearch })
+
+                let purchaseWithProducts = await db("purchases_products")
+                    .innerJoin(
+                        "purchases",
+                        "purchases_products.purchase_id", "=", "purchases.id")
+                    .where({ purchase_id: purchaseIdToSearch })
+                    .innerJoin(
+                        "products",
+                        "purchases_products.product_id", "=", "products.id")
+                    .where({ purchase_id: purchaseIdToSearch })
+
                 res.status(200).send(purchaseWithProducts)
             }
             else {
@@ -391,18 +437,22 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
         }
 
         else {
-            res.status(400).send("Um 'id' deve ser informado para pesquisar a compra.")
+            res.status(400)
+            throw new Error("Um 'id' deve ser informado para pesquisar a compra.")
         }
     }
-    catch (error: any) {
+    catch (error) {
         console.log(error)
-        if (res.statusCode === 200) {
-            res.status(400)
-        }
-        res.send(error.message)
+
+        if (res.statusCode === 200) { res.status(400) }
+
+        if (error instanceof Error) { res.send(error.message) }
+
+        else { res.send("Unexpected error.") }
     }
 })
 
+//DELETE QUERIES
 //delete product by id
 app.delete('/products/:id', async (req: Request, res: Response) => {
     try {
@@ -420,34 +470,28 @@ app.delete('/products/:id', async (req: Request, res: Response) => {
                     .from("products")
                     .where({ id: id })
 
-                res.status(200).send("Produto deletado com sucesso.")
+                res.status(200).send("Product deleted successfully.")
             }
 
             else {
                 res.status(404)
-                throw new Error("Produto com 'id' inserido não encontrado.")
+                throw new Error("Product with inserted 'id' not found.")
             }
         }
         else {
             res.status(400)
-            throw new Error("Um 'id' deve ser informado para o produto ser deletado.")
+            throw new Error("An 'id' must be inserted to delete a product.")
         }
     }
 
     catch (error) {
         console.log(error)
 
-        if (res.statusCode === 200) {
-            res.status(500);
-        }
+        if (res.statusCode === 200) { res.status(500) }
 
-        if (error instanceof Error) {
-            res.send(error.message)
-        }
+        if (error instanceof Error) { res.send(error.message) }
 
-        else {
-            res.send("Erro inesperado.")
-        }
+        else { res.send("Unexpected error.") }
     }
 })
 
@@ -467,12 +511,12 @@ app.delete('/users/:id', async (req: Request, res: Response) => {
                     .from("users")
                     .where({ id: id })
 
-                res.status(200).send("Usuário deletado com sucesso.")
+                res.status(200).send("User deleted successfully.")
             }
 
             else {
                 res.status(404)
-                throw new Error("Usuário não encontrado.")
+                throw new Error("User with inserted 'id' not found.")
             }
         }
     }
@@ -480,9 +524,8 @@ app.delete('/users/:id', async (req: Request, res: Response) => {
     catch (error) {
         console.log(error)
 
-        if (res.statusCode === 200) {
-            res.status(500);
-        }
+        if (res.statusCode === 200) { res.status(500); }
+
         if (error instanceof Error) { res.send(error.message) }
 
         else { res.send("Erro inesperado.") }
@@ -502,31 +545,31 @@ app.delete('/purchases/:id', async (req: Request, res: Response) => {
                 .where({ id: id })
 
             if (purchaseToDelete) {
-                await db.delete().from("purchases").where({ id: id })
-                res.status(200).send("Compra deletada com sucesso.")
+                await db
+                    .delete()
+                    .from("purchases")
+                    .where({ id: id })
+                res.status(200).send("Purchase deleted successfully.")
             }
 
             else {
                 res.status(400)
-                throw new Error("Compra com o 'id' informado não encontrada.")
+                throw new Error("Purchase with inserted 'id' wasn't found.")
             }
         }
 
         else {
             res.status(400)
-            throw new Error("Um 'id' deve ser informado para que a compra seja deletada.")
+            throw new Error("An 'id' must be inserted to delete a purchase.")
         }
     }
 
     catch (error) {
         console.log(error)
-        if (res.statusCode === 200) {
-            res.status(500)
-        }
-        if (error instanceof Error) {
-            res.send(error.message)
-        } else {
-            res.send("Erro inesperado.")
-        }
+        if (res.statusCode === 200) { res.status(500) }
+
+        if (error instanceof Error) { res.send(error.message) }
+
+        else { res.send("Erro inesperado.") }
     }
 })
